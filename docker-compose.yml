@@ -1,0 +1,50 @@
+# backend/docker-compose.yml
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: paldev
+      POSTGRES_USER: paldev
+      POSTGRES_PASSWORD: paldev
+    volumes:
+      - pgdev/var/lib/postgresql/data
+    ports:
+      - "5444:5432"  # для локальной отладки
+    networks:
+      - backend-net
+
+#  redis:
+#    image: redis:7-alpine
+#    ports:
+#      - "6379:6379"
+#    networks:
+#      - backend-net
+
+  backend:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=paldev
+      - DB_PASSWORD=paldev
+      - DB_NAME=paldev
+#      - REDIS_ADDR=redis:6379
+    depends_on:
+      - db
+#      - redis
+    networks:
+      - backend-net
+    # Для горячей перезагрузки в разработке (опционально):
+    # volumes:
+    #   - .:/app
+    # command: go run main.go
+
+volumes:
+#  postgres_dev_
+  pgdev
+
+networks:
+  backend-net:
+    driver: bridge
