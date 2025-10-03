@@ -2,9 +2,13 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
-
+	"errors"
 	_ "github.com/lib/pq"
+	"log"
+	"net/http"
+	handler "palback/internal/delivery/http"
+	"palback/internal/repository"
+	"palback/internal/usecase"
 )
 
 func main() {
@@ -19,5 +23,14 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println("A new version of the pilgrimage project palomniki.su will be there")
+	// Инициализация слоёв приложения
+	countryRepo := repository.NewCountryRepo(db)
+	countryService := usecase.NewCountryUseCase(countryRepo)
+	countryHandler := handler.NewCountryHandler(countryService)
+
+	router := handler.NewRouter(countryHandler)
+
+	if err := router.Start(":8080"); !errors.Is(err, http.ErrServerClosed) {
+		log.Fatal(err)
+	}
 }
