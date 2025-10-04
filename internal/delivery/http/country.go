@@ -17,7 +17,6 @@ type CountryHandler struct {
 }
 
 type country struct {
-	ID   string `json:"id"`
 	Name string `json:"name"`
 }
 
@@ -68,7 +67,8 @@ func (h *CountryHandler) Post(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest)
 	}
 
-	if !validCountryID.MatchString(req.ID) {
+	id := c.Param("id")
+	if !validCountryID.MatchString(id) {
 		return echo.NewHTTPError(
 			http.StatusBadRequest,
 			"id страны должен состоять из строчных латинских букв и иметь в длину от 2 до 6 символов включительно",
@@ -76,7 +76,6 @@ func (h *CountryHandler) Post(c echo.Context) error {
 	}
 
 	data, err := h.service.Post(ctx, model.Country{
-		ID:   req.ID,
 		Name: req.Name,
 	})
 
@@ -105,15 +104,15 @@ func (h *CountryHandler) Put(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest)
 	}
 
-	if !validCountryID.MatchString(req.ID) {
+	id := c.Param("id")
+	if !validCountryID.MatchString(id) {
 		return echo.NewHTTPError(
 			http.StatusBadRequest,
 			"id страны должен состоять из строчных латинских букв и иметь в длину от 2 до 6 символов включительно",
 		)
 	}
 
-	err := h.service.Put(ctx, model.Country{
-		ID:   req.ID,
+	err := h.service.Put(ctx, id, model.Country{
 		Name: req.Name,
 	})
 

@@ -11,7 +11,7 @@ func NewRouter(countryHandler *CountryHandler) *echo.Echo {
 	e.GET("/countries/:id", countryHandler.Get)
 	e.GET("/countries", countryHandler.GetAll)
 	e.POST("/countries", countryHandler.Post)
-	e.PUT("/countries", countryHandler.Put)
+	e.PUT("/countries/:id", countryHandler.Put)
 	e.DELETE("/countries/:id", countryHandler.Delete)
 
 	return e

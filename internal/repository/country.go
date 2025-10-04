@@ -94,10 +94,10 @@ func (r *CountryRepo) Post(ctx context.Context, country model.Country) (*model.C
 	}, nil
 }
 
-func (r *CountryRepo) Put(ctx context.Context, country model.Country) error {
+func (r *CountryRepo) Put(ctx context.Context, id string, country model.Country) error {
 	q := `update countries set name=$1 where id=$2`
 
-	result, err := r.db.ExecContext(ctx, q, country.Name, country.ID)
+	result, err := r.db.ExecContext(ctx, q, country.Name, id)
 	if err != nil {
 		return err
 	}
