@@ -1,5 +1,52 @@
 package config
 
+import (
+	"log"
+	"os"
+
+	"github.com/joho/godotenv"
+)
+
+type Config struct {
+	DBDriver   string
+	DBHost     string
+	DBPort     string
+	DBUser     string
+	DBPassword string
+	DBName     string
+	ServerPort string
+}
+
+func Load() *Config {
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("Файл .env не найден, используем переменные окружения")
+	}
+
+	if err := godotenv.Load(".env.local"); err == nil {
+		log.Println("Загружен .env.local")
+	} else if !os.IsNotExist(err) {
+		log.Printf("Ошибка при загрузке .env.local: %v", err)
+	}
+
+	return &Config{
+		DBDriver:   getEnv("DB_DRIVER", "postgres"),
+		DBHost:     getEnv("DB_HOST", "localhost"),
+		DBPort:     getEnv("DB_PORT", "5432"),
+		DBUser:     getEnv("DB_USER", "postgres"),
+		DBPassword: getEnv("DB_PASSWORD", ""),
+		DBName:     getEnv("DB_NAME", "mydb"),
+		ServerPort: getEnv("SERVER_PORT", "8080"),
+	}
+}
+
+func getEnv(key, fallback string) string {
+	if value, ok := os.LookupEnv(key); ok {
+		return value
+	}
+	return fallback
+}
+
 func GetLang() string {
 	return "ru"
 }
