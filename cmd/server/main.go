@@ -3,16 +3,33 @@ package main
 import (
 	"database/sql"
 	"errors"
-	_ "github.com/lib/pq"
+	"fmt"
 	"log"
 	"net/http"
+
+	_ "github.com/lib/pq"
+	
+	"palback/internal/config"
 	handler "palback/internal/delivery/http"
 	"palback/internal/repository"
 	"palback/internal/usecase"
 )
 
 func main() {
-	db, err := sql.Open("postgres", "host=localhost port=5444 user=paldev password=paldev dbname=paldev sslmode=disable")
+
+	// Загрузка данных из конфига
+	cfg := config.Load()
+
+	// Подключение БД
+	dbConnString := fmt.Sprintf(
+		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+		cfg.DBHost,
+		cfg.DBPort,
+		cfg.DBUser,
+		cfg.DBPassword,
+		cfg.DBName,
+	)
+	db, err := sql.Open(cfg.DBDriver, dbConnString)
 	if err != nil {
 		panic(err)
 	}
