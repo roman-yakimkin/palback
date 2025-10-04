@@ -15,6 +15,6 @@ type CountryService interface {
 	Get(ctx context.Context, id string) (*model.Country, error)
 	GetAll(ctx context.Context) ([]model.Country, error)
 	Post(ctx context.Context, country model.Country) (*model.Country, error)
-	Put(ctx context.Context, country model.Country) error
+	Put(ctx context.Context, id string, country model.Country) error
 	Delete(ctx context.Context, id string) error
 }

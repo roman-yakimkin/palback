@@ -55,8 +55,8 @@ func (c *CountryUseCase) Post(ctx context.Context, country model.Country) (*mode
 	return result, nil
 }
 
-func (c *CountryUseCase) Put(ctx context.Context, country model.Country) error {
-	err := c.repo.Put(ctx, country)
+func (c *CountryUseCase) Put(ctx context.Context, id string, country model.Country) error {
+	err := c.repo.Put(ctx, id, country)
 
 	if err != nil {
 		switch {
