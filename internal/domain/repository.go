@@ -20,3 +20,8 @@ type RegionRepo interface {
 	Update(context.Context, int, model.Region) error
 	Delete(context.Context, int) error
 }
+
+type CityTypeRepo interface {
+	Get(context.Context, int) (*model.CityType, error)
+	GetAll(context.Context) ([]model.CityType, error)
+}

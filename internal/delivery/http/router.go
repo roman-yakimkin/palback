@@ -7,6 +7,7 @@ import (
 func NewRouter(
 	countryHandler *CountryHandler,
 	regionHandler *RegionHandler,
+	cityTypeHandler *CityTypeHandler,
 ) *echo.Echo {
 	e := echo.New()
 
@@ -23,6 +24,10 @@ func NewRouter(
 	e.POST("/regions", regionHandler.Post)
 	e.PUT("/regions/:id", regionHandler.Put)
 	e.DELETE("/regions/:id", regionHandler.Delete)
+
+	// Работа с типами населенных пунктов
+	e.GET("/city-types/:id", cityTypeHandler.Get)
+	e.GET("/city-types", cityTypeHandler.GetAll)
 
 	return e
 }

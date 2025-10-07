@@ -26,7 +26,7 @@ type regionDTO struct {
 	Name      string `json:"name"`
 }
 
-func (dto *regionDTO) ToRegion() model.Region {
+func (dto *regionDTO) ToModel() model.Region {
 	return model.Region{
 		ID:        dto.ID,
 		CountryID: dto.CountryID,
@@ -48,7 +48,7 @@ func (r *RegionRepo) Get(ctx context.Context, id int) (*model.Region, error) {
 		return nil, err
 	}
 
-	region := dto.ToRegion()
+	region := dto.ToModel()
 	return &region, nil
 
 }
@@ -72,7 +72,7 @@ func (r *RegionRepo) GetByCountry(ctx context.Context, countryId string) ([]mode
 			return nil, err
 		}
 
-		regions = append(regions, dto.ToRegion())
+		regions = append(regions, dto.ToModel())
 	}
 
 	if err = rows.Err(); err != nil {
