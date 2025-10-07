@@ -49,10 +49,15 @@ func main() {
 	regionService := usecase.NewRegionUseCase(countryService, regionRepo)
 	regionHandler := handler.NewRegionHandler(regionService)
 
+	cityTypeRepo := repository.NewCityTypeRepo(db)
+	cityTypeService := usecase.NewCityTypeUseCase(cityTypeRepo)
+	cityTypeHandler := handler.NewCityTypeHandler(cityTypeService)
+
 	// Инициализация рутера
 	router := handler.NewRouter(
 		countryHandler,
 		regionHandler,
+		cityTypeHandler,
 	)
 
 	if err := router.Start(":" + cfg.ServerPort); !errors.Is(err, http.ErrServerClosed) {

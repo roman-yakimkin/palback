@@ -33,3 +33,12 @@ type RegionService interface {
 	Update(ctx context.Context, id int, region model.Region) error
 	Delete(ctx context.Context, id int) error
 }
+
+var (
+	ErrCityTypeNotFound = errors.New("тип населенного пункта не найден")
+)
+
+type CityTypeService interface {
+	Get(ctx context.Context, id int) (*model.CityType, error)
+	GetAll(ctx context.Context) ([]model.CityType, error)
+}
