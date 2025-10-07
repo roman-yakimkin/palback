@@ -4,8 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"palback/internal/domain"
 	"palback/internal/domain/model"
 	localErrors "palback/internal/pkg/errors"
+	"strings"
 )
 
 type CountryRepo struct {
@@ -19,24 +21,26 @@ func NewCountryRepo(db *sql.DB) *CountryRepo {
 }
 
 type countryDTO struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+	ID         string `json:"id"`
+	Name       string `json:"name"`
+	HasRegions bool   `json:"has_regions"`
 }
 
 func (dto *countryDTO) ToCountry() model.Country {
 	return model.Country{
-		ID:   dto.ID,
-		Name: dto.Name,
+		ID:         dto.ID,
+		Name:       dto.Name,
+		HasRegions: dto.HasRegions,
 	}
 }
 
 // Get Получить информацию об одной стране
 func (r *CountryRepo) Get(ctx context.Context, id string) (*model.Country, error) {
-	q := `select c.id, c.name from countries c where c.id = $1`
+	q := `select c.id, c.name, c.has_regions from countries c where c.id = $1`
 
 	var dto countryDTO
 
-	err := r.db.QueryRowContext(ctx, q, id).Scan(&dto.ID, &dto.Name)
+	err := r.db.QueryRowContext(ctx, q, id).Scan(&dto.ID, &dto.Name, &dto.HasRegions)
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, localErrors.ErrNotFound
 	}
@@ -51,7 +55,7 @@ func (r *CountryRepo) Get(ctx context.Context, id string) (*model.Country, error
 
 // GetAll Получить информацию обо всех странах
 func (r *CountryRepo) GetAll(ctx context.Context) ([]model.Country, error) {
-	q := `select id, name from countries order by name`
+	q := `select id, name, has_regions from countries order by name`
 
 	rows, err := r.db.QueryContext(ctx, q)
 	if err != nil {
@@ -64,7 +68,7 @@ func (r *CountryRepo) GetAll(ctx context.Context) ([]model.Country, error) {
 	for rows.Next() {
 		var dto countryDTO
 
-		err := rows.Scan(&dto.ID, &dto.Name)
+		err := rows.Scan(&dto.ID, &dto.Name, &dto.HasRegions)
 		if err != nil {
 			return nil, err
 		}
@@ -79,25 +83,33 @@ func (r *CountryRepo) GetAll(ctx context.Context) ([]model.Country, error) {
 	return countries, nil
 }
 
-func (r *CountryRepo) Post(ctx context.Context, country model.Country) (*model.Country, error) {
-	q := `insert into countries (id, name) values ($1, $2) returning id`
+func (r *CountryRepo) Create(ctx context.Context, country model.Country) (*model.Country, error) {
+	q := `insert into countries (id, name, has_regions) values ($1, $2, $3) returning id`
 
 	var id string
-	err := r.db.QueryRowContext(ctx, q, country.ID, country.Name).Scan(&id)
+	err := r.db.QueryRowContext(ctx, q, country.ID, country.Name, country.HasRegions).Scan(&id)
 	if err != nil {
-		return nil, err
+		switch {
+		case strings.Contains(err.Error(), "countries_id_key"):
+			return nil, domain.ErrCountryAlreadyAdded
+		case strings.Contains(err.Error(), "countries_name_key"):
+			return nil, domain.ErrCountryNameNotUnique
+		default:
+			return nil, err
+		}
 	}
 
 	return &model.Country{
-		ID:   id,
-		Name: country.Name,
+		ID:         id,
+		Name:       country.Name,
+		HasRegions: country.HasRegions,
 	}, nil
 }
 
-func (r *CountryRepo) Put(ctx context.Context, id string, country model.Country) error {
-	q := `update countries set name=$1 where id=$2`
+func (r *CountryRepo) Update(ctx context.Context, id string, country model.Country) error {
+	q := `update countries set name=$1, has_regions=$2 where id=$3`
 
-	result, err := r.db.ExecContext(ctx, q, country.Name, id)
+	result, err := r.db.ExecContext(ctx, q, country.Name, country.HasRegions, id)
 	if err != nil {
 		return err
 	}

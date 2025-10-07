@@ -1,6 +1,7 @@
 package model
 
 type Country struct {
-	ID   string
-	Name string
+	ID         string
+	Name       string
+	HasRegions bool
 }
