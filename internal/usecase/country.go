@@ -24,7 +24,12 @@ func (c *CountryUseCase) Get(ctx context.Context, id string) (*model.Country, er
 	country, err := c.repo.Get(ctx, id)
 
 	if err != nil {
-		return nil, fmt.Errorf("ошибка получения страны по id: %w", err)
+		switch {
+		case errors.Is(err, localErrors.ErrNotFound):
+			return nil, domain.ErrCountryNotFound
+		default:
+			return nil, fmt.Errorf("ошибка получения страны по id: %w", err)
+		}
 	}
 
 	return country, nil
@@ -40,13 +45,11 @@ func (c *CountryUseCase) GetAll(ctx context.Context) ([]model.Country, error) {
 	return countries, nil
 }
 
-func (c *CountryUseCase) Post(ctx context.Context, country model.Country) (*model.Country, error) {
-	result, err := c.repo.Post(ctx, country)
+func (c *CountryUseCase) Create(ctx context.Context, country model.Country) (*model.Country, error) {
+	result, err := c.repo.Create(ctx, country)
 
 	if err != nil {
 		switch {
-		case strings.Contains(err.Error(), "duplicate key"):
-			return nil, domain.ErrCountryAlreadyAdded
 		default:
 			return nil, fmt.Errorf("ошибка добавления страны: %w", err)
 		}
@@ -55,8 +58,8 @@ func (c *CountryUseCase) Post(ctx context.Context, country model.Country) (*mode
 	return result, nil
 }
 
-func (c *CountryUseCase) Put(ctx context.Context, id string, country model.Country) error {
-	err := c.repo.Put(ctx, id, country)
+func (c *CountryUseCase) Update(ctx context.Context, id string, country model.Country) error {
+	err := c.repo.Update(ctx, id, country)
 
 	if err != nil {
 		switch {
@@ -84,5 +87,4 @@ func (c *CountryUseCase) Delete(ctx context.Context, id string) error {
 	}
 
 	return nil
-
 }

@@ -8,7 +8,15 @@ import (
 type CountryRepo interface {
 	Get(context.Context, string) (*model.Country, error)
 	GetAll(context.Context) ([]model.Country, error)
-	Post(context.Context, model.Country) (*model.Country, error)
-	Put(context.Context, string, model.Country) error
+	Create(context.Context, model.Country) (*model.Country, error)
+	Update(context.Context, string, model.Country) error
 	Delete(context.Context, string) error
+}
+
+type RegionRepo interface {
+	Get(context.Context, int) (*model.Region, error)
+	GetByCountry(context.Context, string) ([]model.Region, error)
+	Create(context.Context, model.Region) (*model.Region, error)
+	Update(context.Context, int, model.Region) error
+	Delete(context.Context, int) error
 }

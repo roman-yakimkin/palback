@@ -13,7 +13,7 @@ import (
 var validCountryID = regexp.MustCompile(`^[a-z]{2,6}$`)
 
 func getPositiveIntParam(c echo.Context, paramName string) (int, error) {
-	paramStr := c.Param("paramName")
+	paramStr := c.Param(paramName)
 	if strings.TrimSpace(paramStr) == "" {
 		return 0, echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Отсутствует параметр %q", paramName))
 	}

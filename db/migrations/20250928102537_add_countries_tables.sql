@@ -2,7 +2,7 @@
 -- +goose StatementBegin
 create table countries (
     id varchar(6) not null unique check ( id ~ '^[a-z]+$'),
-    name varchar not null
+    name varchar not null unique
 );
 
 create index countries_name_idx on countries(name);

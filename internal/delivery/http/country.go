@@ -17,6 +17,7 @@ type CountryHandler struct {
 }
 
 type country struct {
+	ID   string `json:"id"`
 	Name string `json:"name"`
 }
 
@@ -64,29 +65,29 @@ func (h *CountryHandler) Post(c echo.Context) error {
 	var req country
 
 	if err := c.Bind(&req); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest)
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	id := c.Param("id")
-	if !validCountryID.MatchString(id) {
+	if !validCountryID.MatchString(req.ID) {
 		return echo.NewHTTPError(
 			http.StatusBadRequest,
 			"id страны должен состоять из строчных латинских букв и иметь в длину от 2 до 6 символов включительно",
 		)
 	}
 
-	data, err := h.service.Post(ctx, model.Country{
+	data, err := h.service.Create(ctx, model.Country{
+		ID:   req.ID,
 		Name: req.Name,
 	})
 
 	if err != nil {
 		switch {
-		case errors.Is(err, domain.ErrCountryAlreadyAdded):
-			return echo.NewHTTPError(http.StatusConflict, "страна с данным id уже существует")
+		case localErrors.IsOneOf(err, domain.ErrCountryAlreadyAdded, domain.ErrCountryNameNotUnique):
+			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		default:
 			return echo.NewHTTPError(
 				http.StatusInternalServerError,
-				fmt.Sprintf("невозможно добавить страну: %s", err.Error()),
+				fmt.Sprintf(err.Error()),
 			)
 		}
 	}
@@ -101,7 +102,7 @@ func (h *CountryHandler) Put(c echo.Context) error {
 	var req country
 
 	if err := c.Bind(&req); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest)
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
 	id := c.Param("id")
@@ -112,7 +113,7 @@ func (h *CountryHandler) Put(c echo.Context) error {
 		)
 	}
 
-	err := h.service.Put(ctx, id, model.Country{
+	err := h.service.Update(ctx, id, model.Country{
 		Name: req.Name,
 	})
 
@@ -121,7 +122,7 @@ func (h *CountryHandler) Put(c echo.Context) error {
 		case errors.Is(err, domain.ErrCountryAlreadyAdded):
 			return echo.NewHTTPError(http.StatusConflict, "страна с данным id уже существует")
 		case errors.Is(err, domain.ErrCountryNotFound):
-			return echo.NewHTTPError(http.StatusNotFound)
+			return echo.NewHTTPError(http.StatusNotFound, err.Error())
 		default:
 			return echo.NewHTTPError(
 				http.StatusInternalServerError,
@@ -130,7 +131,7 @@ func (h *CountryHandler) Put(c echo.Context) error {
 		}
 	}
 
-	return c.JSON(http.StatusOK, "страна обновлена")
+	return c.JSON(http.StatusOK, map[string]any{"message": "страна обновлена"})
 }
 
 func (h *CountryHandler) Delete(c echo.Context) error {
@@ -139,7 +140,7 @@ func (h *CountryHandler) Delete(c echo.Context) error {
 	err := h.service.Delete(ctx, c.Param("id"))
 
 	if errors.Is(err, localErrors.ErrNotFound) {
-		return echo.NewHTTPError(http.StatusNotFound)
+		return echo.NewHTTPError(http.StatusNotFound, err.Error())
 	}
 
 	if err != nil {
@@ -149,6 +150,6 @@ func (h *CountryHandler) Delete(c echo.Context) error {
 		)
 	}
 
-	return c.JSON(http.StatusOK, "страна удалена")
+	return c.JSON(http.StatusOK, map[string]any{"message": "страна удалена"})
 
 }

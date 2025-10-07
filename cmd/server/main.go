@@ -8,7 +8,7 @@ import (
 	"net/http"
 
 	_ "github.com/lib/pq"
-	
+
 	"palback/internal/config"
 	handler "palback/internal/delivery/http"
 	"palback/internal/repository"
@@ -45,9 +45,17 @@ func main() {
 	countryService := usecase.NewCountryUseCase(countryRepo)
 	countryHandler := handler.NewCountryHandler(countryService)
 
-	router := handler.NewRouter(countryHandler)
+	regionRepo := repository.NewRegionRepo(db)
+	regionService := usecase.NewRegionUseCase(countryService, regionRepo)
+	regionHandler := handler.NewRegionHandler(regionService)
 
-	if err := router.Start(":8080"); !errors.Is(err, http.ErrServerClosed) {
+	// Инициализация рутера
+	router := handler.NewRouter(
+		countryHandler,
+		regionHandler,
+	)
+
+	if err := router.Start(":" + cfg.ServerPort); !errors.Is(err, http.ErrServerClosed) {
 		log.Fatal(err)
 	}
 }
