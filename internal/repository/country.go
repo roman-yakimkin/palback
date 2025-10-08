@@ -4,10 +4,11 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"strings"
+
 	"palback/internal/domain"
 	"palback/internal/domain/model"
 	localErrors "palback/internal/pkg/errors"
-	"strings"
 )
 
 type CountryRepo struct {

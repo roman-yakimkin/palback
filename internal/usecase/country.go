@@ -4,10 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
+
 	"palback/internal/domain"
 	"palback/internal/domain/model"
 	localErrors "palback/internal/pkg/errors"
-	"strings"
 )
 
 type CountryUseCase struct {

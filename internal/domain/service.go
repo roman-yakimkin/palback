@@ -3,6 +3,7 @@ package domain
 import (
 	"context"
 	"errors"
+
 	"palback/internal/domain/model"
 )
 
@@ -41,4 +42,13 @@ var (
 type CityTypeService interface {
 	Get(ctx context.Context, id int) (*model.CityType, error)
 	GetAll(ctx context.Context) ([]model.CityType, error)
+}
+
+var (
+	ErrPlaceTypeNotFound = errors.New("тип святого места не найден")
+)
+
+type PlaceTypeService interface {
+	Get(ctx context.Context, id int) (*model.PlaceType, error)
+	GetAll(ctx context.Context) ([]model.PlaceType, error)
 }

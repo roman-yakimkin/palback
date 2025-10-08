@@ -2,6 +2,7 @@ package domain
 
 import (
 	"context"
+
 	"palback/internal/domain/model"
 )
 
@@ -24,4 +25,9 @@ type RegionRepo interface {
 type CityTypeRepo interface {
 	Get(context.Context, int) (*model.CityType, error)
 	GetAll(context.Context) ([]model.CityType, error)
+}
+
+type PlaceTypeRepo interface {
+	Get(context.Context, int) (*model.PlaceType, error)
+	GetAll(context.Context) ([]model.PlaceType, error)
 }
