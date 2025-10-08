@@ -8,6 +8,7 @@ func NewRouter(
 	countryHandler *CountryHandler,
 	regionHandler *RegionHandler,
 	cityTypeHandler *CityTypeHandler,
+	placeTypeHandler *PlaceTypeHandler,
 ) *echo.Echo {
 	e := echo.New()
 
@@ -28,6 +29,10 @@ func NewRouter(
 	// Работа с типами населенных пунктов
 	e.GET("/city-types/:id", cityTypeHandler.Get)
 	e.GET("/city-types", cityTypeHandler.GetAll)
+
+	// Работа с типами святых мест
+	e.GET("/place-types/:id", placeTypeHandler.Get)
+	e.GET("/place-types", placeTypeHandler.GetAll)
 
 	return e
 }
