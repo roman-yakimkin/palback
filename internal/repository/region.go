@@ -6,7 +6,7 @@ import (
 	"errors"
 	"strings"
 
-	"palback/internal/domain"
+	"palback/internal/app"
 	"palback/internal/domain/model"
 	localErrors "palback/internal/pkg/errors"
 )
@@ -91,7 +91,7 @@ func (r *RegionRepo) Create(ctx context.Context, region model.Region) (*model.Re
 	if err != nil {
 		switch {
 		case strings.Contains(err.Error(), "fk_unique_country_and_name"):
-			return nil, domain.ErrRegionNotUnique
+			return nil, app.ErrRegionNotUnique
 		default:
 			return nil, err
 		}

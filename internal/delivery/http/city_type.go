@@ -3,18 +3,21 @@ package http
 import (
 	"errors"
 	"net/http"
-	"palback/internal/domain"
-	"palback/internal/domain/model"
-	localErrors "palback/internal/pkg/errors"
 
 	"github.com/labstack/echo/v4"
+	
+	"palback/internal/app"
+	"palback/internal/delivery/http/dto"
+	"palback/internal/domain/model"
+	localErrors "palback/internal/pkg/errors"
+	"palback/internal/pkg/helpers"
 )
 
 type CityTypeHandler struct {
-	service domain.CityTypeService
+	service app.CityTypeService
 }
 
-func NewCityTypeHandler(service domain.CityTypeService) *CityTypeHandler {
+func NewCityTypeHandler(service app.CityTypeService) *CityTypeHandler {
 	return &CityTypeHandler{
 		service: service,
 	}
@@ -40,7 +43,7 @@ func (h *CityTypeHandler) Get(c echo.Context) error {
 		}
 	}
 
-	return c.JSON(http.StatusOK, data)
+	return c.JSON(http.StatusOK, dto.CreateCityTypeResponse(helpers.FromPtr(data)))
 }
 
 func (h *CityTypeHandler) GetAll(c echo.Context) error {
@@ -55,5 +58,5 @@ func (h *CityTypeHandler) GetAll(c echo.Context) error {
 		}
 	}
 
-	return c.JSON(http.StatusOK, data)
+	return c.JSON(http.StatusOK, dto.CreateCityTypeResponseList(data))
 }

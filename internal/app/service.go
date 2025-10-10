@@ -1,9 +1,10 @@
-package domain
+package app
 
 import (
 	"context"
 	"errors"
 
+	appModel "palback/internal/app/model"
 	"palback/internal/domain/model"
 )
 
@@ -28,9 +29,9 @@ var (
 )
 
 type RegionService interface {
-	Get(ctx context.Context, id int) (*model.Region, error)
-	GetByCountry(ctx context.Context, countryId string) ([]model.Region, error)
-	Create(ctx context.Context, region model.Region) (*model.Region, error)
+	Get(ctx context.Context, id int) (*appModel.RegionDetail, error)
+	GetByCountry(ctx context.Context, countryId string) (appModel.RegionList, error)
+	Create(ctx context.Context, region model.Region) (*appModel.RegionDetail, error)
 	Update(ctx context.Context, id int, region model.Region) error
 	Delete(ctx context.Context, id int) error
 }

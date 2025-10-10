@@ -6,16 +6,16 @@ import (
 	"fmt"
 	"strings"
 
-	"palback/internal/domain"
+	"palback/internal/app"
 	"palback/internal/domain/model"
 	localErrors "palback/internal/pkg/errors"
 )
 
 type CountryUseCase struct {
-	repo domain.CountryRepo
+	repo app.CountryRepo
 }
 
-func NewCountryUseCase(repo domain.CountryRepo) *CountryUseCase {
+func NewCountryUseCase(repo app.CountryRepo) *CountryUseCase {
 	return &CountryUseCase{
 		repo: repo,
 	}
@@ -27,7 +27,7 @@ func (c *CountryUseCase) Get(ctx context.Context, id string) (*model.Country, er
 	if err != nil {
 		switch {
 		case errors.Is(err, localErrors.ErrNotFound):
-			return nil, domain.ErrCountryNotFound
+			return nil, app.ErrCountryNotFound
 		default:
 			return nil, fmt.Errorf("ошибка получения страны по id: %w", err)
 		}
@@ -65,9 +65,9 @@ func (c *CountryUseCase) Update(ctx context.Context, id string, country model.Co
 	if err != nil {
 		switch {
 		case errors.Is(err, localErrors.ErrNotFound):
-			return domain.ErrCountryNotFound
+			return app.ErrCountryNotFound
 		case strings.Contains(err.Error(), "duplicate key"):
-			return domain.ErrCountryAlreadyAdded
+			return app.ErrCountryAlreadyAdded
 		default:
 			return fmt.Errorf("ошибка обновления страны: %w", err)
 		}
@@ -80,7 +80,7 @@ func (c *CountryUseCase) Delete(ctx context.Context, id string) error {
 	err := c.repo.Delete(ctx, id)
 
 	if errors.Is(err, localErrors.ErrNotFound) {
-		return domain.ErrCountryNotFound
+		return app.ErrCountryNotFound
 	}
 
 	if err != nil {
