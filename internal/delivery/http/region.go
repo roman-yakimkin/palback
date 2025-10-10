@@ -4,31 +4,30 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"palback/internal/domain"
-	"palback/internal/domain/model"
-	localErrors "palback/internal/pkg/errors"
 
 	"github.com/labstack/echo/v4"
+
+	"palback/internal/app"
+	appModel "palback/internal/app/model"
+	"palback/internal/delivery/http/dto"
+	"palback/internal/domain/model"
+	localErrors "palback/internal/pkg/errors"
+	"palback/internal/pkg/helpers"
 )
 
 type RegionHandler struct {
-	service domain.RegionService
+	service app.RegionService
 }
 
-func NewRegionHandler(service domain.RegionService) *RegionHandler {
+func NewRegionHandler(service app.RegionService) *RegionHandler {
 	return &RegionHandler{
 		service: service,
 	}
 }
 
-type region struct {
-	CountryID string `json:"country_id"`
-	Name      string `json:"name"`
-}
-
 func (h *RegionHandler) Get(c echo.Context) error {
 	ctx := c.Request().Context()
-	var data *model.Region
+	var data *appModel.RegionDetail
 
 	id, err := getPositiveIntParam(c, "id")
 	if err != nil {
@@ -45,7 +44,7 @@ func (h *RegionHandler) Get(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	return c.JSON(http.StatusOK, data)
+	return c.JSON(http.StatusOK, dto.CreateRegionResponse(helpers.FromPtr(data)))
 }
 
 func (h *RegionHandler) GetByCountry(c echo.Context) error {
@@ -55,20 +54,20 @@ func (h *RegionHandler) GetByCountry(c echo.Context) error {
 
 	if err != nil {
 		switch {
-		case errors.Is(err, domain.ErrCountryNotFound):
+		case errors.Is(err, app.ErrCountryNotFound):
 			return echo.NewHTTPError(http.StatusNotFound, err.Error())
 		default:
 			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 		}
 	}
 
-	return c.JSON(http.StatusOK, data)
+	return c.JSON(http.StatusOK, dto.CreateRegionResponseList(data))
 }
 
 func (h *RegionHandler) Post(c echo.Context) error {
 	ctx := c.Request().Context()
 
-	var req region
+	var req dto.RegionPostRequest
 
 	if err := c.Bind(&req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
@@ -81,7 +80,7 @@ func (h *RegionHandler) Post(c echo.Context) error {
 
 	if err != nil {
 		switch {
-		case localErrors.IsOneOf(err, domain.ErrCountryHasNotRegions, domain.ErrRegionNotUnique):
+		case localErrors.IsOneOf(err, app.ErrCountryHasNotRegions, app.ErrRegionNotUnique):
 			return echo.NewHTTPError(
 				http.StatusBadRequest,
 				fmt.Sprintf(err.Error()),
@@ -94,7 +93,7 @@ func (h *RegionHandler) Post(c echo.Context) error {
 		}
 	}
 
-	return c.JSON(http.StatusOK, data)
+	return c.JSON(http.StatusOK, dto.CreateRegionResponse(helpers.FromPtr(data)))
 }
 
 func (h *RegionHandler) Put(c echo.Context) error {
@@ -105,7 +104,7 @@ func (h *RegionHandler) Put(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "ошибка получения региона по id: "+err.Error())
 	}
 
-	var req region
+	var req dto.RegionPutRequest
 
 	if err = c.Bind(&req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
@@ -118,9 +117,9 @@ func (h *RegionHandler) Put(c echo.Context) error {
 
 	if err != nil {
 		switch {
-		case errors.Is(err, domain.ErrCountryNotFound):
+		case errors.Is(err, app.ErrCountryNotFound):
 			return echo.NewHTTPError(http.StatusNotFound, err.Error())
-		case localErrors.IsOneOf(err, domain.ErrCountryHasNotRegions, domain.ErrRegionNotUnique):
+		case localErrors.IsOneOf(err, app.ErrCountryHasNotRegions, app.ErrRegionNotUnique):
 			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		default:
 			return echo.NewHTTPError(
@@ -145,7 +144,7 @@ func (h *RegionHandler) Delete(c echo.Context) error {
 
 	if err != nil {
 		switch {
-		case localErrors.IsOneOf(err, domain.ErrRegionNotFound):
+		case localErrors.IsOneOf(err, app.ErrRegionNotFound):
 			return echo.NewHTTPError(http.StatusNotFound, err.Error())
 		default:
 			return echo.NewHTTPError(
@@ -156,5 +155,4 @@ func (h *RegionHandler) Delete(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, map[string]any{"message": "регион удален"})
-
 }

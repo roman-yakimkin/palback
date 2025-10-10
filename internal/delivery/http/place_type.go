@@ -3,18 +3,21 @@ package http
 import (
 	"errors"
 	"net/http"
-	"palback/internal/domain"
-	"palback/internal/domain/model"
-	localErrors "palback/internal/pkg/errors"
 
 	"github.com/labstack/echo/v4"
+
+	"palback/internal/app"
+	"palback/internal/delivery/http/dto"
+	"palback/internal/domain/model"
+	localErrors "palback/internal/pkg/errors"
+	"palback/internal/pkg/helpers"
 )
 
 type PlaceTypeHandler struct {
-	service domain.PlaceTypeService
+	service app.PlaceTypeService
 }
 
-func NewPlaceTypeHandler(service domain.PlaceTypeService) *PlaceTypeHandler {
+func NewPlaceTypeHandler(service app.PlaceTypeService) *PlaceTypeHandler {
 	return &PlaceTypeHandler{
 		service: service,
 	}
@@ -40,7 +43,7 @@ func (h *PlaceTypeHandler) Get(c echo.Context) error {
 		}
 	}
 
-	return c.JSON(http.StatusOK, data)
+	return c.JSON(http.StatusOK, dto.CreatePlaceTypeResponse(helpers.FromPtr(data)))
 }
 
 func (h *PlaceTypeHandler) GetAll(c echo.Context) error {
@@ -55,5 +58,5 @@ func (h *PlaceTypeHandler) GetAll(c echo.Context) error {
 		}
 	}
 
-	return c.JSON(http.StatusOK, data)
+	return c.JSON(http.StatusOK, dto.CreatePlaceTypeResponseList(data))
 }
