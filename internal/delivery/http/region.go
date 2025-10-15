@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 
@@ -50,7 +51,7 @@ func (h *RegionHandler) Get(c echo.Context) error {
 func (h *RegionHandler) GetByCountry(c echo.Context) error {
 	ctx := c.Request().Context()
 
-	data, err := h.service.GetByCountry(ctx, c.Param("countryId"))
+	data, err := h.service.GetByCountry(ctx, c.Param("id"))
 
 	if err != nil {
 		switch {
@@ -93,7 +94,11 @@ func (h *RegionHandler) Post(c echo.Context) error {
 		}
 	}
 
-	return c.JSON(http.StatusOK, dto.CreateRegionResponse(helpers.FromPtr(data)))
+	dataRec := helpers.FromPtr(data)
+
+	c.Response().Header().Set("location", "/regions/"+strconv.Itoa(dataRec.ID))
+
+	return c.JSON(http.StatusCreated, dto.CreateRegionResponse(dataRec))
 }
 
 func (h *RegionHandler) Put(c echo.Context) error {

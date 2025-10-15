@@ -52,7 +52,7 @@ func (h *CountryHandler) GetAll(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
 
-	return c.JSON(http.StatusOK, dto.CreateCountryResponseList(data))
+	return c.JSON(http.StatusCreated, dto.CreateCountryResponseList(data))
 }
 
 // Post Добавить страну
@@ -90,7 +90,11 @@ func (h *CountryHandler) Post(c echo.Context) error {
 		}
 	}
 
-	return c.JSON(http.StatusOK, data)
+	dataRec := helpers.FromPtr(data)
+
+	c.Response().Header().Set("location", "/countries/"+dataRec.ID)
+
+	return c.JSON(http.StatusOK, dataRec)
 }
 
 // Put Изменить страну
