@@ -21,7 +21,7 @@ func NewRouter(
 
 	// Работа с регионами
 	e.GET("/regions/:id", regionHandler.Get)
-	e.GET("/regions/by-country/:countryId", regionHandler.GetByCountry)
+	e.GET("/countries/:id/regions", regionHandler.GetByCountry)
 	e.POST("/regions", regionHandler.Post)
 	e.PUT("/regions/:id", regionHandler.Put)
 	e.DELETE("/regions/:id", regionHandler.Delete)
