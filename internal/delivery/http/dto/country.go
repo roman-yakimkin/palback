@@ -6,17 +6,24 @@ type CountryPostRequest struct {
 	ID         string `json:"id"`
 	Name       string `json:"name"`
 	HasRegions bool   `json:"has_regions"`
+	Weight     int    `json:"weight"`
 }
 
 type CountryPutRequest struct {
 	Name       string `json:"name"`
 	HasRegions bool   `json:"has_regions"`
+	Weight     int    `json:"weight"`
+}
+
+type CountryOrderRequest struct {
+	Order []string `json:"order"`
 }
 
 type CountryResponse struct {
 	ID         string `json:"id"`
 	Name       string `json:"name"`
 	HasRegions bool   `json:"has_regions"`
+	Weight     int    `json:"weight"`
 }
 
 func CreateCountryResponse(src model.Country) CountryResponse {
@@ -24,6 +31,7 @@ func CreateCountryResponse(src model.Country) CountryResponse {
 		ID:         src.ID,
 		Name:       src.Name,
 		HasRegions: src.HasRegions,
+		Weight:     src.Weight,
 	}
 }
 

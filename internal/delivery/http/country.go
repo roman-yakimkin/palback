@@ -76,6 +76,7 @@ func (h *CountryHandler) Post(c echo.Context) error {
 		ID:         req.ID,
 		Name:       req.Name,
 		HasRegions: req.HasRegions,
+		Weight:     req.Weight,
 	})
 
 	if err != nil {
@@ -118,6 +119,7 @@ func (h *CountryHandler) Put(c echo.Context) error {
 	err := h.service.Update(ctx, id, model.Country{
 		Name:       req.Name,
 		HasRegions: req.HasRegions,
+		Weight:     req.Weight,
 	})
 
 	if err != nil {
@@ -156,4 +158,24 @@ func (h *CountryHandler) Delete(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, map[string]any{"message": "страна удалена"})
 
+}
+
+func (h *CountryHandler) Order(c echo.Context) error {
+	ctx := c.Request().Context()
+
+	var req dto.CountryOrderRequest
+
+	if err := c.Bind(&req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	err := h.service.Order(ctx, req.Order)
+	if err != nil {
+		return echo.NewHTTPError(
+			http.StatusInternalServerError,
+			fmt.Sprintf("невозможно упорядочить страны: %s", err.Error()),
+		)
+	}
+
+	return c.JSON(http.StatusOK, map[string]any{"message": "страны упорядочены"})
 }

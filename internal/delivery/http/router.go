@@ -26,6 +26,7 @@ func NewRouter(
 	e.POST("/countries", countryHandler.Post)
 	e.PUT("/countries/:id", countryHandler.Put)
 	e.DELETE("/countries/:id", countryHandler.Delete)
+	e.POST("/countries/order", countryHandler.Order)
 
 	// Работа с регионами
 	e.GET("/regions/:id", regionHandler.Get)

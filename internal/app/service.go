@@ -20,6 +20,7 @@ type CountryService interface {
 	Create(ctx context.Context, country model.Country) (*model.Country, error)
 	Update(ctx context.Context, id string, country model.Country) error
 	Delete(ctx context.Context, id string) error
+	Order(ctx context.Context, ids []string) error
 }
 
 var (
