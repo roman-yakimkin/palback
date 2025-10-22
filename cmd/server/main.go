@@ -59,6 +59,7 @@ func main() {
 
 	// Инициализация рутера
 	router := handler.NewRouter(
+		cfg,
 		countryHandler,
 		regionHandler,
 		cityTypeHandler,

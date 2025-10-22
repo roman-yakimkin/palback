@@ -15,6 +15,8 @@ type Config struct {
 	DBPassword string
 	DBName     string
 	ServerPort string
+
+	FrontendOrigin string
 }
 
 func Load() *Config {
@@ -30,13 +32,14 @@ func Load() *Config {
 	}
 
 	return &Config{
-		DBDriver:   getEnv("DB_DRIVER", "postgres"),
-		DBHost:     getEnv("DB_HOST", "localhost"),
-		DBPort:     getEnv("DB_PORT", "5432"),
-		DBUser:     getEnv("DB_USER", "postgres"),
-		DBPassword: getEnv("DB_PASSWORD", ""),
-		DBName:     getEnv("DB_NAME", "mydb"),
-		ServerPort: getEnv("SERVER_PORT", "8080"),
+		DBDriver:       getEnv("DB_DRIVER", "postgres"),
+		DBHost:         getEnv("DB_HOST", "localhost"),
+		DBPort:         getEnv("DB_PORT", "5432"),
+		DBUser:         getEnv("DB_USER", "postgres"),
+		DBPassword:     getEnv("DB_PASSWORD", ""),
+		DBName:         getEnv("DB_NAME", "mydb"),
+		ServerPort:     getEnv("SERVER_PORT", "8080"),
+		FrontendOrigin: getEnv("FRONTEND_ORIGIN", "http://localhost:3000"),
 	}
 }
 
