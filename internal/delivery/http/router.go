@@ -1,16 +1,24 @@
 package http
 
 import (
+	"palback/internal/config"
+
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 func NewRouter(
+	cfg *config.Config,
 	countryHandler *CountryHandler,
 	regionHandler *RegionHandler,
 	cityTypeHandler *CityTypeHandler,
 	placeTypeHandler *PlaceTypeHandler,
 ) *echo.Echo {
 	e := echo.New()
+
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{cfg.FrontendOrigin},
+	}))
 
 	// Работа со странами
 	e.GET("/countries/:id", countryHandler.Get)
