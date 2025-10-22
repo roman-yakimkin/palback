@@ -89,3 +89,13 @@ func (c *CountryUseCase) Delete(ctx context.Context, id string) error {
 
 	return nil
 }
+
+func (c *CountryUseCase) Order(ctx context.Context, ids []string) error {
+	err := c.repo.Order(ctx, ids)
+
+	if err != nil {
+		return fmt.Errorf("ошибка сортировки стран: %w", err)
+	}
+
+	return nil
+}

@@ -12,6 +12,7 @@ type CountryRepo interface {
 	Create(context.Context, model.Country) (*model.Country, error)
 	Update(context.Context, string, model.Country) error
 	Delete(context.Context, string) error
+	Order(context.Context, []string) error
 }
 
 type RegionRepo interface {
