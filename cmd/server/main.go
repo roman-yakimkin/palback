@@ -7,7 +7,10 @@ import (
 	"log"
 	"net/http"
 	"palback/internal/infra/storage"
+	"strconv"
 
+	"github.com/boj/redistore"
+	"github.com/gorilla/sessions"
 	_ "github.com/lib/pq"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
@@ -51,6 +54,28 @@ func main() {
 	if err != nil {
 		log.Fatal("Ошибка инициализации MinIO:", err)
 	}
+
+	// Подключение redis
+	rediStore, err := redistore.NewRediStore(
+		10,
+		"tcp",
+		cfg.RedisAddr,
+		cfg.RedisUsername,
+		cfg.RedisPassword,
+		[]byte(cfg.RedisSecretKey),
+	)
+	if err != nil {
+		log.Fatal("Ошибка инициализации Redis:", err)
+	}
+	defer rediStore.Close()
+
+	days, err := strconv.Atoi(cfg.SessionDays)
+	if err != nil {
+		log.Fatal("Ошибка получения длительности сессии", err)
+	}
+	rediStore.SetMaxAge(86400 * days)
+
+	var _ sessions.Store = rediStore
 
 	// Инициализация слоёв приложения
 	_ = storage.NewMinioStorage(minioClient, cfg.MinIOBucketUserAvatars)

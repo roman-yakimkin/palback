@@ -14,12 +14,12 @@ services:
     networks:
       - backend-net
 
-#  redis:
-#    image: redis:7-alpine
-#    ports:
-#      - "6379:6379"
-#    networks:
-#      - backend-net
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
 
   backend:
     build: .
@@ -57,8 +57,9 @@ services:
 
 volumes:
 #  postgres_dev_
-  pgdev
-  minio_data
+  pgdev:
+  redis_data:
+  minio_data:
 
 networks:
   backend-net:
