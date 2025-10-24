@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"strings"
 
-	"palback/internal/app"
 	"palback/internal/domain/model"
 	localErrors "palback/internal/pkg/errors"
+	"palback/internal/usecase"
 )
 
 type CountryRepo struct {
@@ -104,9 +104,9 @@ func (r *CountryRepo) Create(ctx context.Context, country model.Country) (*model
 	if err != nil {
 		switch {
 		case strings.Contains(err.Error(), "countries_id_key"):
-			return nil, app.ErrCountryAlreadyAdded
+			return nil, usecase.ErrCountryAlreadyAdded
 		case strings.Contains(err.Error(), "countries_name_key"):
-			return nil, app.ErrCountryNameNotUnique
+			return nil, usecase.ErrCountryNameNotUnique
 		default:
 			return nil, err
 		}

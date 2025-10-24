@@ -6,9 +6,9 @@ import (
 	"errors"
 	"strings"
 
-	"palback/internal/app"
 	"palback/internal/domain/model"
 	localErrors "palback/internal/pkg/errors"
+	"palback/internal/usecase"
 )
 
 type RegionRepo struct {
@@ -91,7 +91,7 @@ func (r *RegionRepo) Create(ctx context.Context, region model.Region) (*model.Re
 	if err != nil {
 		switch {
 		case strings.Contains(err.Error(), "fk_unique_country_and_name"):
-			return nil, app.ErrRegionNotUnique
+			return nil, usecase.ErrRegionNotUnique
 		default:
 			return nil, err
 		}

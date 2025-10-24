@@ -5,19 +5,19 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	
-	"palback/internal/app"
+
 	"palback/internal/delivery/http/dto"
 	"palback/internal/domain/model"
 	localErrors "palback/internal/pkg/errors"
 	"palback/internal/pkg/helpers"
+	"palback/internal/usecase"
 )
 
 type CityTypeHandler struct {
-	service app.CityTypeService
+	service usecase.CityTypeService
 }
 
-func NewCityTypeHandler(service app.CityTypeService) *CityTypeHandler {
+func NewCityTypeHandler(service usecase.CityTypeService) *CityTypeHandler {
 	return &CityTypeHandler{
 		service: service,
 	}
