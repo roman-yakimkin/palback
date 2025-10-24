@@ -23,6 +23,13 @@ type Config struct {
 	MinIOSecretKey         string
 	MinIOBucketMain        string
 	MinIOBucketUserAvatars string
+
+	RedisAddr      string
+	RedisUsername  string
+	RedisPassword  string
+	RedisSecretKey string
+
+	SessionDays string
 }
 
 func Load() *Config {
@@ -53,6 +60,13 @@ func Load() *Config {
 		MinIOSecretKey:         getEnv("MINIO_SECRET_KEY", "minioadmin"),
 		MinIOBucketMain:        getEnv("MINIO_BUCKET_MAIN", "main"),
 		MinIOBucketUserAvatars: getEnv("MINIO_BUCKET_USER_AVATARS", "user-avatars"),
+
+		RedisAddr:      getEnv("REDIS_ADDR", "redis:6379"),
+		RedisUsername:  getEnv("REDIS_USERNAME", ""),
+		RedisPassword:  getEnv("REDIS_PASSWORD", ""),
+		RedisSecretKey: getEnv("REDIS_SECRET_KEY", "secret-key-32-bytes-long-12345678"),
+
+		SessionDays: getEnv("SESSION_DAYS", "7"),
 	}
 }
 

@@ -12,10 +12,12 @@ services:
       - pgdev:/var/lib/postgresql/data
       - ./db/init:/docker-entrypoint-initdb.d # ← вот эта строка
 
-#  redis:
-#    image: redis:7-alpine
-#    ports:
-#      - "6379:6379"
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
 
   minio:
     image: minio/minio:latest
@@ -31,4 +33,5 @@ services:
 
 volumes:
   pgdev:
+  redis_data:
   minio_data:
