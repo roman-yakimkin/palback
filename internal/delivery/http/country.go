@@ -7,18 +7,18 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"palback/internal/app"
 	"palback/internal/delivery/http/dto"
 	"palback/internal/domain/model"
 	localErrors "palback/internal/pkg/errors"
 	"palback/internal/pkg/helpers"
+	"palback/internal/usecase"
 )
 
 type CountryHandler struct {
-	service app.CountryService
+	service usecase.CountryService
 }
 
-func NewCountryHandler(service app.CountryService) *CountryHandler {
+func NewCountryHandler(service usecase.CountryService) *CountryHandler {
 	return &CountryHandler{
 		service: service,
 	}
@@ -81,7 +81,7 @@ func (h *CountryHandler) Post(c echo.Context) error {
 
 	if err != nil {
 		switch {
-		case localErrors.IsOneOf(err, app.ErrCountryAlreadyAdded, app.ErrCountryNameNotUnique):
+		case localErrors.IsOneOf(err, usecase.ErrCountryAlreadyAdded, usecase.ErrCountryNameNotUnique):
 			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		default:
 			return echo.NewHTTPError(
@@ -124,9 +124,9 @@ func (h *CountryHandler) Put(c echo.Context) error {
 
 	if err != nil {
 		switch {
-		case errors.Is(err, app.ErrCountryAlreadyAdded):
+		case errors.Is(err, usecase.ErrCountryAlreadyAdded):
 			return echo.NewHTTPError(http.StatusConflict, "страна с данным id уже существует")
-		case errors.Is(err, app.ErrCountryNotFound):
+		case errors.Is(err, usecase.ErrCountryNotFound):
 			return echo.NewHTTPError(http.StatusNotFound, err.Error())
 		default:
 			return echo.NewHTTPError(

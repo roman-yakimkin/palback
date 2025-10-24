@@ -1,6 +1,6 @@
 package dto
 
-import appModel "palback/internal/app/model"
+import ucModel "palback/internal/usecase/model"
 
 type RegionPostRequest struct {
 	CountryID string `json:"country_id"`
@@ -18,7 +18,7 @@ type RegionResponse struct {
 	Country CountryResponse `json:"country"`
 }
 
-func CreateRegionResponse(src appModel.RegionDetail) RegionResponse {
+func CreateRegionResponse(src ucModel.RegionDetail) RegionResponse {
 	return RegionResponse{
 		ID:      src.ID,
 		Name:    src.Name,
@@ -30,7 +30,7 @@ type RegionResponseList struct {
 	Items []RegionResponse `json:"items"`
 }
 
-func CreateRegionResponseList(src appModel.RegionList) RegionResponseList {
+func CreateRegionResponseList(src ucModel.RegionList) RegionResponseList {
 	result := RegionResponseList{
 		Items: make([]RegionResponse, 0, len(src.Items)),
 	}

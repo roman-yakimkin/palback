@@ -6,12 +6,15 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"palback/internal/infra/storage"
 
 	_ "github.com/lib/pq"
+	"github.com/minio/minio-go/v7"
+	"github.com/minio/minio-go/v7/pkg/credentials"
 
 	"palback/internal/config"
 	handler "palback/internal/delivery/http"
-	"palback/internal/repository"
+	"palback/internal/infra/repository"
 	"palback/internal/usecase"
 )
 
@@ -40,7 +43,18 @@ func main() {
 		panic(err)
 	}
 
+	// Подключение minio
+	minioClient, err := minio.New(cfg.MinIOEndpoint, &minio.Options{
+		Creds:  credentials.NewStaticV4(cfg.MinIOAccessKey, cfg.MinIOSecretKey, ""),
+		Secure: false, // отключено, т.к. MinIO в Docker без TLS
+	})
+	if err != nil {
+		log.Fatal("Ошибка инициализации MinIO:", err)
+	}
+
 	// Инициализация слоёв приложения
+	_ = storage.NewMinioStorage(minioClient, cfg.MinIOBucketUserAvatars)
+
 	countryRepo := repository.NewCountryRepo(db)
 	countryService := usecase.NewCountryUseCase(countryRepo)
 	countryHandler := handler.NewCountryHandler(countryService)

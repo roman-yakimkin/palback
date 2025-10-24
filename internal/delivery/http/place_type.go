@@ -6,18 +6,18 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"palback/internal/app"
 	"palback/internal/delivery/http/dto"
 	"palback/internal/domain/model"
 	localErrors "palback/internal/pkg/errors"
 	"palback/internal/pkg/helpers"
+	"palback/internal/usecase"
 )
 
 type PlaceTypeHandler struct {
-	service app.PlaceTypeService
+	service usecase.PlaceTypeService
 }
 
-func NewPlaceTypeHandler(service app.PlaceTypeService) *PlaceTypeHandler {
+func NewPlaceTypeHandler(service usecase.PlaceTypeService) *PlaceTypeHandler {
 	return &PlaceTypeHandler{
 		service: service,
 	}

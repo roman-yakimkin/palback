@@ -8,19 +8,19 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"palback/internal/app"
-	appModel "palback/internal/app/model"
 	"palback/internal/delivery/http/dto"
 	"palback/internal/domain/model"
 	localErrors "palback/internal/pkg/errors"
 	"palback/internal/pkg/helpers"
+	"palback/internal/usecase"
+	ucModel "palback/internal/usecase/model"
 )
 
 type RegionHandler struct {
-	service app.RegionService
+	service usecase.RegionService
 }
 
-func NewRegionHandler(service app.RegionService) *RegionHandler {
+func NewRegionHandler(service usecase.RegionService) *RegionHandler {
 	return &RegionHandler{
 		service: service,
 	}
@@ -28,7 +28,7 @@ func NewRegionHandler(service app.RegionService) *RegionHandler {
 
 func (h *RegionHandler) Get(c echo.Context) error {
 	ctx := c.Request().Context()
-	var data *appModel.RegionDetail
+	var data *ucModel.RegionDetail
 
 	id, err := getPositiveIntParam(c, "id")
 	if err != nil {
@@ -55,7 +55,7 @@ func (h *RegionHandler) GetByCountry(c echo.Context) error {
 
 	if err != nil {
 		switch {
-		case errors.Is(err, app.ErrCountryNotFound):
+		case errors.Is(err, usecase.ErrCountryNotFound):
 			return echo.NewHTTPError(http.StatusNotFound, err.Error())
 		default:
 			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
@@ -81,7 +81,7 @@ func (h *RegionHandler) Post(c echo.Context) error {
 
 	if err != nil {
 		switch {
-		case localErrors.IsOneOf(err, app.ErrCountryHasNotRegions, app.ErrRegionNotUnique):
+		case localErrors.IsOneOf(err, usecase.ErrCountryHasNotRegions, usecase.ErrRegionNotUnique):
 			return echo.NewHTTPError(
 				http.StatusBadRequest,
 				fmt.Sprintf(err.Error()),
@@ -122,9 +122,9 @@ func (h *RegionHandler) Put(c echo.Context) error {
 
 	if err != nil {
 		switch {
-		case errors.Is(err, app.ErrCountryNotFound):
+		case errors.Is(err, usecase.ErrCountryNotFound):
 			return echo.NewHTTPError(http.StatusNotFound, err.Error())
-		case localErrors.IsOneOf(err, app.ErrCountryHasNotRegions, app.ErrRegionNotUnique):
+		case localErrors.IsOneOf(err, usecase.ErrCountryHasNotRegions, usecase.ErrRegionNotUnique):
 			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		default:
 			return echo.NewHTTPError(
@@ -149,7 +149,7 @@ func (h *RegionHandler) Delete(c echo.Context) error {
 
 	if err != nil {
 		switch {
-		case localErrors.IsOneOf(err, app.ErrRegionNotFound):
+		case localErrors.IsOneOf(err, usecase.ErrRegionNotFound):
 			return echo.NewHTTPError(http.StatusNotFound, err.Error())
 		default:
 			return echo.NewHTTPError(

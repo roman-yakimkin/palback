@@ -4,17 +4,17 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"palback/internal/usecase/port"
 
-	"palback/internal/app"
 	"palback/internal/domain/model"
 	localErrors "palback/internal/pkg/errors"
 )
 
 type CityTypeUseCase struct {
-	repo app.CityTypeRepo
+	repo port.CityTypeRepo
 }
 
-func NewCityTypeUseCase(repo app.CityTypeRepo) *CityTypeUseCase {
+func NewCityTypeUseCase(repo port.CityTypeRepo) *CityTypeUseCase {
 	return &CityTypeUseCase{
 		repo: repo,
 	}
@@ -26,7 +26,7 @@ func (c *CityTypeUseCase) Get(ctx context.Context, id int) (*model.CityType, err
 	if err != nil {
 		switch {
 		case errors.Is(err, localErrors.ErrNotFound):
-			return nil, app.ErrCityTypeNotFound
+			return nil, ErrCityTypeNotFound
 		default:
 			return nil, fmt.Errorf("ошибка получения типа населенного пункта по id: %w", err)
 		}
