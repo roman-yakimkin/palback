@@ -1,9 +1,11 @@
 package middleware
 
 import (
-	"github.com/labstack/echo/v4"
-	"palback/internal/config"
 	"strings"
+
+	"github.com/labstack/echo/v4"
+
+	"palback/internal/config"
 )
 
 // SetupLanguage Установить язык для запросов

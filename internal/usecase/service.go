@@ -32,3 +32,20 @@ type PlaceTypeService interface {
 	Get(ctx context.Context, id int) (*model.PlaceType, error)
 	GetAll(ctx context.Context) ([]model.PlaceType, error)
 }
+
+type RoleService interface {
+	Get(ctx context.Context, id model.RoleID) (*model.Role, error)
+	GetAll(ctx context.Context) ([]model.Role, error)
+	GetAllMap(ctx context.Context) (map[model.RoleID]*model.Role, error)
+}
+
+type UserService interface {
+	Get(ctx context.Context, id int) (*ucModel.UserDetail, error)
+	GetAll(ctx context.Context) (ucModel.UserList, error)
+	Register(ctx context.Context, userName, email, password string) (*ucModel.UserDetail, error)
+	VerifyEmail(ctx context.Context, token string) error
+	ResendVerificationEmail(ctx context.Context, email string) error
+	Login(ctx context.Context, identifier, password string) (*ucModel.UserDetail, error)
+	RequestPasswordReset(ctx context.Context, email string) error
+	ConfirmPasswordReset(ctx context.Context, token, newPassword string) error
+}

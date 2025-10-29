@@ -26,6 +26,7 @@ func CreateRegionList(regions []model.Region, countries []model.Country) (result
 		countryMap[country.ID] = country
 	}
 
+	result.Items = make([]RegionDetail, 0, len(regions))
 	for _, region := range regions {
 		result.Items = append(result.Items, CreateRegionDetail(region, countryMap[region.CountryID]))
 	}

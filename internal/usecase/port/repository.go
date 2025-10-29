@@ -32,3 +32,21 @@ type PlaceTypeRepo interface {
 	Get(context.Context, int) (*model.PlaceType, error)
 	GetAll(context.Context) ([]model.PlaceType, error)
 }
+
+type UserRepo interface {
+	Get(context.Context, int) (*model.User, error)
+	GetByIdentifier(ctx context.Context, identifier string) (*model.User, error)
+	GetByEmail(ctx context.Context, email string) (*model.User, error)
+	GetAll(context.Context) ([]model.User, error)
+	Create(context.Context, model.User) (*model.User, error)
+	Delete(context.Context, int) error
+	UpdateEmailVerified(ctx context.Context, email string) error
+	UpdatePassword(ctx context.Context, email, hashedPassword string) error
+	IncrementSessionVersion(ctx context.Context, email string) error
+}
+
+type RoleRepo interface {
+	Get(context.Context, model.RoleID) (*model.Role, error)
+	GetAll(context.Context) ([]model.Role, error)
+	GetAllMap(context.Context) (map[model.RoleID]*model.Role, error)
+}
