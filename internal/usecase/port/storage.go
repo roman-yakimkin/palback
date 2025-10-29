@@ -12,7 +12,8 @@ type FileStorage interface {
 }
 
 type KeyValueStorage interface {
-	Get(ctx context.Context, key string) ([]byte, error)
-	Set(ctx context.Context, key string, value []byte, ttl int) error
-	Delete(ctx context.Context, key string) error
+	Get(ctx context.Context, key string) (string, error)
+	Set(ctx context.Context, key, value string, expireSeconds int) error
+	Del(ctx context.Context, key string) error
+	Exists(ctx context.Context, key string) (bool, error)
 }

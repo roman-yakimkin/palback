@@ -1,22 +1,44 @@
 package http
 
 import (
-	"palback/internal/config"
+	"net/http"
+	"palback/internal/usecase/port"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+
+	"palback/internal/config"
+	mwApp "palback/internal/delivery/http/middleware"
 )
+
+type CustomValidator struct {
+	validator *validator.Validate
+}
+
+// Validate реализует интерфейс echo.Validator
+func (cv *CustomValidator) Validate(i any) error {
+	if err := cv.validator.Struct(i); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	return nil
+}
 
 func NewRouter(
 	cfg *config.Config,
+	authenticator Authenticator,
+	rateLimiter port.RateLimiter,
 	countryHandler *CountryHandler,
 	regionHandler *RegionHandler,
 	cityTypeHandler *CityTypeHandler,
 	placeTypeHandler *PlaceTypeHandler,
+	userHandler *UserHandler,
 ) *echo.Echo {
 	e := echo.New()
+	e.Validator = &CustomValidator{validator: validator.New()}
 
 	e.Use(middleware.Logger())
+	e.Use(mwApp.AuthMiddleware(authenticator))
 	e.Use(middleware.Recover())
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{cfg.FrontendOrigin},
@@ -44,6 +66,21 @@ func NewRouter(
 	// Работа с типами святых мест
 	e.GET("/place-types/:id", placeTypeHandler.Get)
 	e.GET("/place-types", placeTypeHandler.GetAll)
+
+	// Работа с пользователями
+	e.POST("/users/register", userHandler.Register,
+		mwApp.RateLimitByIP(rateLimiter, 5, 600, "register"))
+	e.POST("/users/verify-email", userHandler.VerifyEmail)
+	e.POST("/users/resend-verification", userHandler.ResendVerification,
+		mwApp.RateLimitByIP(rateLimiter, 5, 60, "resend-verification"))
+	e.POST("/users/login", userHandler.Login,
+		mwApp.RateLimitByIP(rateLimiter, 5, 60, "login"))
+	e.POST("/users/logout", userHandler.Logout)
+	e.POST("/users/reset-password", userHandler.ResetPassword,
+		mwApp.RateLimitByIP(rateLimiter, 6, 3600, "reset"))
+	e.POST("/users/reset-password/confirm", userHandler.ResetPasswordConfirm)
+	e.GET("/users/profile", userHandler.ResetPassword)
+	e.DELETE("users/delete", userHandler.Delete)
 
 	return e
 }

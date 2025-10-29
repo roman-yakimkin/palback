@@ -3,6 +3,7 @@ package config
 import (
 	"log"
 	"os"
+	"strconv"
 
 	"github.com/joho/godotenv"
 )
@@ -29,10 +30,16 @@ type Config struct {
 	RedisPassword  string
 	RedisSecretKey string
 
-	SessionDays string
+	SessionDays int
+
+	SMTPHost     string
+	SMTPPort     string
+	SMTPUsername string
+	SMTPPassword string
+	SMTPFrom     string
 }
 
-func Load() *Config {
+func Load() (*Config, error) {
 	err := godotenv.Load()
 	if err != nil {
 		log.Println("Файл .env не найден")
@@ -44,7 +51,7 @@ func Load() *Config {
 		log.Printf("Ошибка при загрузке .env.local: %v", err)
 	}
 
-	return &Config{
+	cfg := &Config{
 		DBDriver:   getEnv("DB_DRIVER", "postgres"),
 		DBHost:     getEnv("DB_HOST", "localhost"),
 		DBPort:     getEnv("DB_PORT", "5432"),
@@ -66,8 +73,19 @@ func Load() *Config {
 		RedisPassword:  getEnv("REDIS_PASSWORD", ""),
 		RedisSecretKey: getEnv("REDIS_SECRET_KEY", "secret-key-32-bytes-long-12345678"),
 
-		SessionDays: getEnv("SESSION_DAYS", "7"),
+		SMTPHost:     getEnv("SMTP_HOST", "localhost"),
+		SMTPPort:     getEnv("SMTP_PORT", "1025"),
+		SMTPUsername: getEnv("SMTP_USERNAME", ""),
+		SMTPPassword: getEnv("SMTP_PASSWORD", ""),
+		SMTPFrom:     getEnv("SMTP_FROM", "no-reply@palomniki.su"),
 	}
+
+	cfg.SessionDays, err = strconv.Atoi(getEnv("SESSION_DAYS", "7"))
+	if err != nil {
+		return nil, err
+	}
+
+	return cfg, nil
 }
 
 func getEnv(key, fallback string) string {

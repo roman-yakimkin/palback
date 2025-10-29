@@ -82,10 +82,7 @@ func (h *RegionHandler) Post(c echo.Context) error {
 	if err != nil {
 		switch {
 		case localErrors.IsOneOf(err, usecase.ErrCountryHasNotRegions, usecase.ErrRegionNotUnique):
-			return echo.NewHTTPError(
-				http.StatusBadRequest,
-				fmt.Sprintf(err.Error()),
-			)
+			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		default:
 			return echo.NewHTTPError(
 				http.StatusInternalServerError,
