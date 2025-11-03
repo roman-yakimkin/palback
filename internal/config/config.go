@@ -4,11 +4,14 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/joho/godotenv"
 )
 
 type Config struct {
+	IsProduction bool
+
 	DBDriver   string
 	DBHost     string
 	DBPort     string
@@ -52,6 +55,8 @@ func Load() (*Config, error) {
 	}
 
 	cfg := &Config{
+		IsProduction: false,
+
 		DBDriver:   getEnv("DB_DRIVER", "postgres"),
 		DBHost:     getEnv("DB_HOST", "localhost"),
 		DBPort:     getEnv("DB_PORT", "5432"),
@@ -78,6 +83,10 @@ func Load() (*Config, error) {
 		SMTPUsername: getEnv("SMTP_USERNAME", ""),
 		SMTPPassword: getEnv("SMTP_PASSWORD", ""),
 		SMTPFrom:     getEnv("SMTP_FROM", "no-reply@palomniki.su"),
+	}
+
+	if strings.ToLower(strings.TrimSpace(getEnv("IS_PRODUCTION", "false"))) == "true" {
+		cfg.IsProduction = true
 	}
 
 	cfg.SessionDays, err = strconv.Atoi(getEnv("SESSION_DAYS", "7"))

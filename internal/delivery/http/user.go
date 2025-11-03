@@ -63,12 +63,16 @@ func (h *UserHandler) Register(c echo.Context) error {
 func (h *UserHandler) VerifyEmail(c echo.Context) error {
 	ctx := c.Request().Context()
 
-	token := c.QueryParam("token")
-	if token == "" {
+	var req dto.VerifyEmailRequest
+	if err := c.Bind(&req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "неверный json")
+	}
+
+	if req.Token == "" {
 		return c.JSON(http.StatusBadRequest, "отсутсвует токен")
 	}
 
-	err := h.service.VerifyEmail(ctx, token)
+	err := h.service.VerifyEmail(ctx, req.Token)
 	if err != nil {
 		switch {
 		case errors.Is(err, usecase.ErrNoReplyFromKeyValueStorage):
@@ -237,6 +241,26 @@ func (h *UserHandler) ResetPasswordConfirm(c echo.Context) error {
 	return c.JSON(http.StatusOK, map[string]string{
 		"message": "пароль был успешно обновлён",
 	})
+}
+
+func (h *UserHandler) Me(c echo.Context) error {
+	ctx := c.Request().Context()
+
+	userId, err := h.auth.GetUserID(ctx, c.Request())
+	if err != nil {
+		return echo.NewHTTPError(http.StatusUnauthorized, "неверная сессия")
+	}
+
+	if userId <= 0 {
+		return echo.NewHTTPError(http.StatusUnauthorized, "пользователь не авторизован")
+	}
+
+	user, err := h.service.Get(ctx, userId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusUnauthorized, "пользователь не найден")
+	}
+
+	return c.JSON(http.StatusOK, dto.CreateUserResponse(helpers.FromPtr(user)))
 }
 
 func (h *UserHandler) Profile(c echo.Context) error {
