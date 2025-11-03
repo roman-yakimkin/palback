@@ -36,7 +36,7 @@ func NewRedigoAuthenticator(
 		Path:     "/",
 		MaxAge:   86400 * cfg.SessionDays, // 24 часа
 		HttpOnly: true,
-		Secure:   false, // true в продакшене (только по HTTPS)
+		Secure:   cfg.IsProduction,
 		SameSite: http.SameSiteLaxMode,
 	}
 

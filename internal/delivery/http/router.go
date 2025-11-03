@@ -41,7 +41,8 @@ func NewRouter(
 	e.Use(mwApp.AuthMiddleware(authenticator))
 	e.Use(middleware.Recover())
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{cfg.FrontendOrigin},
+		AllowOrigins:     []string{cfg.FrontendOrigin},
+		AllowCredentials: true,
 	}))
 
 	// Работа со странами
@@ -69,16 +70,17 @@ func NewRouter(
 
 	// Работа с пользователями
 	e.POST("/users/register", userHandler.Register,
-		mwApp.RateLimitByIP(rateLimiter, 5, 600, "register"))
+		mwApp.RateLimitByIP(rateLimiter, 5*100, 600, "register"))
 	e.POST("/users/verify-email", userHandler.VerifyEmail)
 	e.POST("/users/resend-verification", userHandler.ResendVerification,
-		mwApp.RateLimitByIP(rateLimiter, 5, 60, "resend-verification"))
+		mwApp.RateLimitByIP(rateLimiter, 5*100, 60, "resend-verification"))
 	e.POST("/users/login", userHandler.Login,
-		mwApp.RateLimitByIP(rateLimiter, 5, 60, "login"))
+		mwApp.RateLimitByIP(rateLimiter, 5*100, 60, "login"))
 	e.POST("/users/logout", userHandler.Logout)
 	e.POST("/users/reset-password", userHandler.ResetPassword,
-		mwApp.RateLimitByIP(rateLimiter, 6, 3600, "reset"))
+		mwApp.RateLimitByIP(rateLimiter, 6*100, 3600, "reset"))
 	e.POST("/users/reset-password/confirm", userHandler.ResetPasswordConfirm)
+	e.GET("/users/me", userHandler.Me)
 	e.GET("/users/profile", userHandler.ResetPassword)
 	e.DELETE("users/delete", userHandler.Delete)
 

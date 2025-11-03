@@ -20,7 +20,7 @@ func NewSMTPSender(config *config.Config) *SMTPSender {
 }
 
 func (s *SMTPSender) SendVerificationEmail(toEmail, token string) error {
-	verifyLink := fmt.Sprintf("%s/verify-email?token=%s", s.config.FrontendOrigin, token)
+	verifyLink := fmt.Sprintf("%s/user/verify-email?token=%s", s.config.FrontendOrigin, token)
 
 	// Простой HTML-шаблон
 	tmpl := `
@@ -42,7 +42,7 @@ func (s *SMTPSender) SendVerificationEmail(toEmail, token string) error {
 }
 
 func (s *SMTPSender) SendPasswordResetEmail(toEmail, token string) error {
-	resetLink := fmt.Sprintf("%s/reset-password?token=%s", s.config.FrontendOrigin, token)
+	resetLink := fmt.Sprintf("%s/user/reset-password?token=%s", s.config.FrontendOrigin, token)
 
 	// HTML-шаблон
 	tmpl := `

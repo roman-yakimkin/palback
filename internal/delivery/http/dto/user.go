@@ -13,12 +13,16 @@ type RegisterRequest struct {
 }
 
 type LoginRequest struct {
-	Identifier string `json:"identifier" validate:"required"` // username или email
+	Identifier string `json:"email" validate:"required"` // username или email
 	Password   string `json:"password" validate:"required"`
 }
 
 type ResetPasswordRequest struct {
 	Email string `json:"email" validate:"required,email"`
+}
+
+type VerifyEmailRequest struct {
+	Token string `json:"token" validate:"required"`
 }
 
 type ResetPasswordConfirmRequest struct {
